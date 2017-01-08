@@ -1,7 +1,8 @@
 #!/bin/bash
 #Author - Kuldeep Kulkarni
 #Contributor - Ratish Maruthiyodan
-#Script will setup and configure ambari-server/ambari-agents and hdp cluster
+#Contributir - Arti Wadhwani
+#Script will setup and configure ambari-server/ambari-agents and hdf cluster
 ##########################################################
 if [ $# -ne 1 ]
 then
@@ -117,6 +118,8 @@ setup_ambari_server()
 
 	ssh -i $PVT_KEYFILE -o "StrictHostKeyChecking no" -o "CheckHostIP=no" -o "UserKnownHostsFile=/dev/null"  root@$AMBARI_SERVER yum -y install ambari-server
 	ssh -i $PVT_KEYFILE -o "StrictHostKeyChecking no" -o "CheckHostIP=no" -o "UserKnownHostsFile=/dev/null"  root@$AMBARI_SERVER ambari-server setup -s
+#Set up hdf management pack for hdf 2.1.1.0. and centos 6:
+	ssh -i $PVT_KEYFILE -o "StrictHostKeyChecking no" -o "CheckHostIP=no" -o "UserKnownHostsFile=/dev/null"  root@$AMBARI_SERVER "echo yes|ambari-server install-mpack --mpack=http://public-repo-1.hortonworks.com/HDF/centos6/2.x/updates/2.1.1.0/tars/hdf_ambari_mp/hdf-ambari-mpack-2.1.1.0-2.tar.gz --purge --verbose"
 	ssh -i $PVT_KEYFILE -o "StrictHostKeyChecking no" -o "CheckHostIP=no" -o "UserKnownHostsFile=/dev/null"  root@$AMBARI_SERVER ambari-server start
 }
 
@@ -133,7 +136,7 @@ setup_ambari_agent()
 	done
 }
 
-setup_hdp()
+setup_hdf()
 {
 	$LOC/generate_json.sh $CLUSTER_PROPERTIES $AMBARI_SERVER_IP
 	printf "\n$(tput setaf 2)Please hit http://$AMBARI_SERVER_IP:8080 in your browser and check installation status!\n\nIt would not take more than 5 minutes :)\n\nHappy Hadooping!\n$(tput sgr 0)"
@@ -155,8 +158,8 @@ bootstrap_hosts
 setup_ambari_server
 setup_ambari_agent
 sleep 5
-setup_hdp
+setup_hdf
 #upload usage tracker file to sftp
-sftp -o "StrictHostKeyChecking no" -o "CheckHostIP=no" -o "UserKnownHostsFile=/dev/null" root@172.26.64.249 <<EOF
-put /tmp/usage_track_"$USER"_"$TS" /root/
-EOF
+#sftp -o "StrictHostKeyChecking no" -o "CheckHostIP=no" -o "UserKnownHostsFile=/dev/null" root@172.26.64.249 <<EOF
+#put /tmp/usage_track_"$USER"_"$TS" /root/
+#EOF

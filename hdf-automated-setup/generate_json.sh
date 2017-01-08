@@ -2,7 +2,7 @@
 ########
 # Author: Kuldeep Kulkarni 
 # Description: This script does the Magic of automating HDP install using Ambari Blueprints
-#set -x
+set -x
 
 #Globals
 LOC=`pwd`
@@ -59,7 +59,11 @@ clustermap()
 LAST_HST_NAME=`grep 'HOST[0-9]*' $LOC/$PROPS|grep -v SERVICES|tail -1|cut -d'=' -f1`
 
 echo "{
-  \"configurations\" : [ ],
+	\"configurations\" : [{
+		\"nifi-ambari-config\": {
+			\"nifi.security.encrypt.configuration.password\": \"hadoop123456789\"
+		}
+}],
   \"host_groups\" : ["
 
 for HOST in `grep -w 'HOST[0-9]*' $LOC/$PROPS|tr '\n' ' '`
@@ -93,7 +97,7 @@ done
 echo "  ],
   \"Blueprints\" : {
     \"blueprint_name\" : \"$CLUSTERNAME\",
-    \"stack_name\" : \"HDP\",
+    \"stack_name\" : \"HDF\",
     \"stack_version\" : \"$STACK_VERSION\"
   }
 }"
@@ -106,7 +110,8 @@ echo "  ],
 repobuilder()
 {
 #Start of function
-BASE_URL="http://$REPO_SERVER/hdp/$OS/HDP-$CLUSTER_VERSION/"
+#BASE_URL="http://$REPO_SERVER/hdp/$OS/HDP-$CLUSTER_VERSION/"
+BASE_URL="http://public-repo-1.hortonworks.com/HDF/centos6/2.x/updates/2.1.1.0"
 
 
 echo "{
@@ -145,9 +150,9 @@ HDP_UTILS_VERSION=`echo $BASE_URL_UTILS| awk -F'/' '{print $6}'`
 
 curl -H "X-Requested-By: ambari" -X POST -u admin:admin http://$AMBARI_HOST:8080/api/v1/blueprints/$CLUSTERNAME -d @"$LOC"/cluster_config.json
 sleep 1
-curl -H "X-Requested-By: ambari" -X PUT -u admin:admin http://$AMBARI_HOST:8080/api/v1/stacks/HDP/versions/$STACK_VERSION/operating_systems/redhat"$OS_VERSION"/repositories/HDP-$STACK_VERSION -d @$LOC/repo.json
+curl -H "X-Requested-By: ambari" -X PUT -u admin:admin http://$AMBARI_HOST:8080/api/v1/stacks/HDF/versions/$STACK_VERSION/operating_systems/redhat"$OS_VERSION"/repositories/HDF-$STACK_VERSION -d @$LOC/repo.json
 sleep 1
-curl -H "X-Requested-By: ambari" -X PUT -u admin:admin http://$AMBARI_HOST:8080/api/v1/stacks/HDP/versions/$STACK_VERSION/operating_systems/redhat"$OS_VERSION"/repositories/$HDP_UTILS_VERSION -d @$LOC/repo-utils.json
+curl -H "X-Requested-By: ambari" -X PUT -u admin:admin http://$AMBARI_HOST:8080/api/v1/stacks/HDF/versions/$STACK_VERSION/operating_systems/redhat"$OS_VERSION"/repositories/$HDP_UTILS_VERSION -d @$LOC/repo-utils.json
 sleep 1
 curl -H "X-Requested-By: ambari" -X POST -u admin:admin http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTERNAME -d @$LOC/hostmap.json
 

@@ -2,7 +2,7 @@
 ########
 # Author: Kuldeep Kulkarni 
 # Description: This script does the Magic of automating HDP install using Ambari Blueprints
-set -x
+#set -x
 
 #Globals
 LOC=`pwd`
@@ -110,8 +110,7 @@ echo "  ],
 repobuilder()
 {
 #Start of function
-#BASE_URL="http://$REPO_SERVER/hdp/$OS/HDP-$CLUSTER_VERSION/"
-BASE_URL="http://public-repo-1.hortonworks.com/HDF/centos6/2.x/updates/2.1.1.0"
+BASE_URL="http://$REPO_SERVER/hdf/$OS/HDF-$CLUSTER_VERSION/"
 
 
 echo "{

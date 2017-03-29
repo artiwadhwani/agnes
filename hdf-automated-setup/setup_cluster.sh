@@ -122,6 +122,8 @@ setup_ambari_server()
 
 	ssh -i $PVT_KEYFILE -o "StrictHostKeyChecking no" -o "CheckHostIP=no" -o "UserKnownHostsFile=/dev/null"  root@$AMBARI_SERVER yum -y install ambari-server
 	ssh -i $PVT_KEYFILE -o "StrictHostKeyChecking no" -o "CheckHostIP=no" -o "UserKnownHostsFile=/dev/null"  root@$AMBARI_SERVER ambari-server setup -s
+        #Set up hdf management pack for hdf
+        ssh -i $PVT_KEYFILE -o "StrictHostKeyChecking no" -o "CheckHostIP=no" -o "UserKnownHostsFile=/dev/null"  root@$AMBARI_SERVER "echo yes|ambari-server install-mpack --mpack=http://$REPO_SERVER/hdf/centos6/HDF-$CLUSTER_VERSION/hdf-ambari-mpack-$CLUSTER_VERSION.tar.gz --purge --verbose"
 	ssh -i $PVT_KEYFILE -o "StrictHostKeyChecking no" -o "CheckHostIP=no" -o "UserKnownHostsFile=/dev/null"  root@$AMBARI_SERVER ambari-server start
 }
 
